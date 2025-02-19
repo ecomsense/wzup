@@ -8,3 +8,6 @@ wheels/
 
 # Virtual environments
 .venv
+
+PyWhatKit_DB.txt
+**/data/**

@@ -1,4 +1,7 @@
-import pywhatkit
+from constants import DEALERS, STOCK, logging
+import pandas as pd
+from pywhatkit import sendwhatmsg_instantly
+
 
 def test():
     # Send a WhatsApp Message to a Contact at 1:30 PM
@@ -26,9 +29,36 @@ def test():
     ascii_art = pywhatkit.image_to_ascii_art("image path")
     print(ascii_art)
 
+
 def main():
-    print("Hello from wzup!")
-    pywhatkit.sendwhatmsg("+919632946646", "Hi", 13, 30, 15, True, 2)
+    try:
+        mobile = "unknown"
+        df = pd.read_excel(STOCK, engine="openpyxl")
+        message_columns = ["stock"]
+        message = ""
+        for _, row in df.iterrows():
+            if row["stock"] != 0:
+                row_msg = ", ".join(
+                    str(row[col])
+                    for col in df.columns
+                    if col not in message_columns and pd.notnull(row[col])
+                )
+                message += row_msg + "\n" + "\n"
+        message += "\n visit our website https://ecomsense.in for the latest update"
+        message += "\n reply with `STOP` to stop receiving these messages"
+        df = pd.read_excel(DEALERS, index_col="mobile", engine="openpyxl")
+        for mobile, row in df.iterrows():
+            if pd.isna(row["stop"]):
+                full_msg = row["salutation"] + "\n" + "\n" + message
+                sendwhatmsg_instantly(
+                    phone_no="+91" + str(mobile),
+                    message=full_msg,
+                    tab_close=True,
+                    close_time=3,
+                )
+                logging.info(f"message sent successfully to {mobile}")
+    except Exception as e:
+        print(f"{e} while sending whatsapp messages to {mobile}")
 
 
 if __name__ == "__main__":
