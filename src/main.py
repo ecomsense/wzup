@@ -44,12 +44,12 @@ def main():
                     if col not in message_columns and pd.notnull(row[col])
                 )
                 message += row_msg + "\n" + "\n"
-        message += "\n visit our website https://ecomsense.in for the latest update"
-        message += "\n reply with `STOP` to stop receiving these messages"
+        message += "visit us at https://ecomsense.in \n"
+        message += "reply with `STOP` to unsubscribe"
         df = pd.read_excel(DEALERS, index_col="mobile", engine="openpyxl")
         for mobile, row in df.iterrows():
             if pd.isna(row["stop"]):
-                full_msg = row["salutation"] + "\n" + "\n" + message
+                full_msg = "Dear " + row["salutation"] + ",\n" + "\n" + message
                 sendwhatmsg_instantly(
                     phone_no="+91" + str(mobile),
                     message=full_msg,
